@@ -1,7 +1,27 @@
 import { NextPage } from "next";
 import { LockClosedIcon } from "@heroicons/react/solid";
+import { FormEvent, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../contexts/auth";
+import { useRouter } from "next/router";
 
 const Login: NextPage = () => {
+  const { user, signIn } = useContext(AuthContext);
+  const [userEmail, setUserEmail] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const router = useRouter();
+
+  async function handleSignIn(event: FormEvent) {
+    event.preventDefault();
+
+    await signIn(userEmail, userPassword);
+  }
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <>
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -17,7 +37,7 @@ const Login: NextPage = () => {
             </h2>
           </div>
 
-          <form className="mt-8 space-y-6" action="#" method="POST">
+          <form className="mt-8 space-y-6" onSubmit={handleSignIn}>
             <input type="hidden" name="remember" defaultValue={"true"} />
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
@@ -25,6 +45,8 @@ const Login: NextPage = () => {
                   Email address
                 </label>
                 <input
+                  value={userEmail}
+                  onChange={(event) => setUserEmail(event.target.value)}
                   id="email-address"
                   name="email"
                   type="text"
@@ -38,6 +60,8 @@ const Login: NextPage = () => {
                     Password
                   </label>
                   <input
+                    value={userPassword}
+                    onChange={(event) => setUserPassword(event.target.value)}
                     id="password"
                     name="password"
                     type="password"

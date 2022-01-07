@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { api } from "../services/api";
 
 type AuthResponse = {
   token: string;
@@ -7,6 +8,7 @@ type AuthResponse = {
     name: string;
     email: string;
   };
+  _message: string;
 };
 
 type User = {
@@ -18,6 +20,7 @@ type User = {
 type AuthContextData = {
   user: User | null;
   signOut: () => void;
+  signIn: (userEmail: string, userPassword: string) => Promise<void>;
 };
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -29,19 +32,17 @@ type AuthProvider = {
 export function AuthProvider(pros: AuthProvider) {
   const [user, setUser] = useState<User | null>(null);
 
-  async function signIn() {
-    const response: AuthResponse = {
-      token: "123456789",
-      user: {
-        id: "1",
-        name: "Tarcizio",
-        email: "tarcizio@io.com",
-      },
-    };
+  async function signIn(userEmail: string, userPassword: string) {
+    const response = await api.post<AuthResponse>("sessions", {
+      userEmail: userEmail,
+      userPassword: userPassword,
+    });
 
-    const { token, user } = response;
+    const { token, user, _message } = response.data;
 
     localStorage.setItem("@painel:token", token);
+
+    api.defaults.headers.common.authorization = `Bearer ${token}`;
 
     setUser(user);
   }
@@ -55,12 +56,16 @@ export function AuthProvider(pros: AuthProvider) {
     const token = localStorage.getItem("@painel:token");
 
     if (token) {
-      signIn();
+      api.defaults.headers.common.authorization = `Bearer ${token}`;
+
+      api.get<User>("profile").then((response) => {
+        setUser(response.data);
+      });
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signOut }}>
+    <AuthContext.Provider value={{ user, signOut, signIn }}>
       {pros.children}
     </AuthContext.Provider>
   );

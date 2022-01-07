@@ -8,8 +8,6 @@ const Home: NextPage = () => {
   const { user } = useContext(AuthContext);
   const router = useRouter();
 
-  console.log(user);
-
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -30,7 +28,7 @@ const Home: NextPage = () => {
             <div className="px-4 py-6 sm:px-0">
               <div className="h-96">
                 <Iframe
-                  url="https://app.powerbi.com/view?r=eyJrIjoiZTlkMDc0ZTgtYzAwNS00ZmE4LTg1Y2EtMjRkMzAwZDM5NGZhIiwidCI6IjAwYjVkZjI0LWY3YmMtNDZkYi05YmYzLThmMTYyMjQ2NjA5NCJ9"
+                  url="https://app.powerbi.com/view?r=eyJrIjoiMzUxMGIyNDctYzg0MS00Y2Y0LTgyZTYtM2E4ZGQ1ZDU4MzI3IiwidCI6IjAwYjVkZjI0LWY3YmMtNDZkYi05YmYzLThmMTYyMjQ2NjA5NCJ9"
                   width="1220"
                   height="600"
                 ></Iframe>
